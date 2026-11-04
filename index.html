@@ -425,8 +425,6 @@
       }
       .life-number.dead {
         color: #ff6677;
-        text-decoration: line-through;
-        text-decoration-thickness: 3px;
       }
       .player-footer {
         display: flex;
@@ -836,6 +834,11 @@
           padding: 10px 10px max(10px, env(safe-area-inset-bottom));
         }
       }
+      @media (max-width: 420px) {
+        .mast-extra {
+          display: none;
+        }
+      }
       @media (max-width: 360px) {
         .board.four .micro {
           font-size: 9px;
@@ -855,10 +858,13 @@
           letter-spacing: 0.08em;
         }
         .menu-row {
-          grid-template-columns: minmax(0, 1fr);
+          grid-template-columns: 60px minmax(0, 1fr);
         }
         .menu-label {
-          margin-bottom: -4px;
+          font-size: 8px;
+        }
+        .menu-opts .pill {
+          font-size: 10px;
         }
       }
       @media (orientation: landscape) and (max-height: 510px) {
@@ -934,6 +940,304 @@
           gap: 3px;
         }
       }
+
+      .viewer {
+        position: fixed;
+        inset: 0;
+        z-index: 25;
+        display: none;
+        padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+          max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+        background: var(--bg);
+      }
+      .viewer.show {
+        display: block;
+      }
+      .viewer-frame {
+        --rail: 26px;
+        grid-template-columns: minmax(0, 1fr);
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        height: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        overflow: hidden;
+        background: var(--lav);
+        border-radius: 26px 18px 18px 26px;
+      }
+      .viewer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: var(--peach);
+        padding: 6px 6px 6px 22px;
+      }
+      .viewer-head h2 {
+        min-width: 0;
+        margin: 0;
+        color: var(--ink);
+        font-size: clamp(12px, 3.6vw, 18px);
+        font-weight: 900;
+        letter-spacing: 0.09em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .viewer-main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 200px;
+        gap: 10px;
+        min-height: 0;
+        margin-left: var(--rail);
+        padding: 10px;
+        background: var(--bg);
+        border-radius: 16px 0 0 16px;
+      }
+      .viewer-stage {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+        border: 1px solid var(--edge);
+        border-radius: 12px;
+        background:
+          linear-gradient(#26283c55 1px, transparent 1px) 0 0/100% 32px,
+          linear-gradient(90deg, #26283c55 1px, transparent 1px) 0 0/32px 100%,
+          #0b0d1b;
+      }
+      .schematic,
+      #earthCanvas {
+        position: absolute;
+        inset: 0;
+        display: none;
+        width: 100%;
+        height: 100%;
+      }
+      .schematic.on,
+      #earthCanvas.on {
+        display: block;
+      }
+      .schematic {
+        padding: 10px;
+      }
+      #earthCanvas {
+        touch-action: none;
+        cursor: grab;
+      }
+      .schematic path,
+      .schematic ellipse,
+      .schematic circle {
+        fill: none;
+        vector-effect: non-scaling-stroke;
+      }
+      .schematic .axis {
+        stroke: #3a3d5a;
+        stroke-width: 1;
+        stroke-dasharray: 2 7;
+      }
+      .schematic .hull {
+        stroke: var(--blue);
+        stroke-width: 1.8;
+        fill: #98c7fa12;
+        stroke-dasharray: 1;
+        animation: draw 1.6s ease-out both;
+      }
+      .schematic .detail {
+        stroke: #bca5f999;
+        stroke-width: 1;
+      }
+      .schematic .windows {
+        stroke: #96dfc8bb;
+        stroke-width: 1.4;
+        stroke-dasharray: 2 6;
+      }
+      .schematic .warp {
+        stroke: #7fd2ff;
+        stroke-width: 3;
+        animation: warp 2.4s ease-in-out infinite;
+      }
+      .schematic .pulse {
+        fill: #fa976b55;
+        stroke: var(--orange);
+        stroke-width: 1.6;
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+      .schematic .bussard {
+        fill: #e994bd66;
+        stroke: var(--pink);
+      }
+      .schematic .callout {
+        stroke: var(--peach);
+        stroke-width: 1;
+      }
+      .schematic text {
+        fill: var(--peach);
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      .scan {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 70px;
+        pointer-events: none;
+        background: linear-gradient(90deg, transparent, #98c7fa26);
+        border-right: 1px solid #98c7fa66;
+        animation: scan 5s linear infinite;
+      }
+      .viewer-stage.earth .scan {
+        display: none;
+      }
+      .readouts {
+        display: grid;
+        align-content: start;
+        gap: 6px;
+        margin: 0;
+        min-width: 0;
+      }
+      .readouts div {
+        padding: 7px 10px;
+        background: #171829;
+        border-left: 6px solid var(--accent, var(--orange));
+        border-radius: 0 9px 9px 0;
+      }
+      .readouts div:nth-child(2n) {
+        --accent: var(--blue);
+      }
+      .readouts div:nth-child(3n) {
+        --accent: var(--pink);
+      }
+      .readouts dt {
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+      }
+      .readouts dd {
+        margin: 2px 0 0;
+        color: #f4ecfa;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .viewer-tabs {
+        display: flex;
+        gap: 4px;
+        padding: 5px 6px 6px var(--rail);
+        background: var(--pink);
+      }
+      .viewer-tabs .pill {
+        flex: 1;
+        min-width: 0;
+        min-height: 44px;
+        padding: 0 4px;
+        background: var(--ink);
+        color: var(--peach);
+      }
+      .viewer-tabs .pill.active {
+        background: var(--lav);
+        color: var(--ink);
+      }
+      @keyframes draw {
+        from {
+          stroke-dashoffset: 1;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.45;
+        }
+      }
+      @keyframes warp {
+        50% {
+          opacity: 0.5;
+        }
+      }
+      @keyframes scan {
+        from {
+          transform: translateX(-80px);
+        }
+        to {
+          transform: translateX(1200px);
+        }
+      }
+      @media (max-width: 699px) and (orientation: portrait) {
+        .viewer-frame {
+          --rail: 14px;
+          border-radius: 20px 16px 16px 20px;
+        }
+        .viewer-head {
+          padding-left: 16px;
+        }
+        .viewer-main {
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-rows: minmax(0, 1fr) auto;
+          gap: 8px;
+          padding: 8px;
+        }
+        .readouts {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 5px;
+        }
+        .readouts div {
+          padding: 5px 8px;
+        }
+        .readouts dt {
+          font-size: 8px;
+        }
+        .readouts dd {
+          font-size: 12px;
+        }
+        .schematic {
+          padding: 4px;
+        }
+        .schematic text {
+          font-size: 22px;
+        }
+      }
+      @media (orientation: landscape) and (max-height: 510px) {
+        .viewer-head {
+          padding-top: 2px;
+          padding-bottom: 2px;
+        }
+        .viewer-head .menu-close,
+        .viewer-tabs .pill {
+          min-height: 34px;
+        }
+        .readouts {
+          gap: 3px;
+        }
+        .readouts div {
+          padding: 3px 8px;
+        }
+        .readouts dd {
+          font-size: 12px;
+        }
+        .viewer-main {
+          grid-template-columns: minmax(0, 1fr) 170px;
+          padding: 6px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .scan,
+        .schematic .warp,
+        .schematic .pulse {
+          animation: none;
+        }
+        .schematic .hull {
+          animation: none;
+          stroke-dasharray: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -951,8 +1255,11 @@
             <span></span>
           </div>
           <div class="mast-sub">
-            <span>TACTICAL STATUS / DUEL COMMAND</span>
-            <span id="clock">STARDATE 01</span>
+            <span>
+              <span class="mast-extra">TACTICAL STATUS /</span>
+              DUEL COMMAND
+            </span>
+            <span id="clock"></span>
           </div>
         </div>
       </header>
@@ -1014,16 +1321,26 @@
             </div>
           </div>
           <div class="menu-row">
-            <span class="menu-label">Advanced</span>
+            <span class="menu-label">Options</span>
             <div class="menu-opts">
               <button
                 class="pill"
                 id="advancedBtn"
-                aria-label="Show poison counters and five or ten life adjustments"
+                aria-label="Advanced mode: poison counters and five or ten life adjustments"
                 aria-pressed="false"
               >
-                OFF
+                ADVANCED
               </button>
+              <button class="pill" id="soundBtn" aria-label="Sound effects" aria-pressed="true">
+                SOUND
+              </button>
+            </div>
+          </div>
+          <div class="menu-row">
+            <span class="menu-label">Library</span>
+            <div class="menu-opts">
+              <button class="pill" data-open-view="profile">SCHEMATIC</button>
+              <button class="pill" data-open-view="earth">EARTH</button>
             </div>
           </div>
           <button class="pill warn" id="resetBtn">NEW GAME</button>
@@ -1036,6 +1353,111 @@
         <h2 id="dialogTitle"></h2>
         <div id="dialogBody"></div>
         <div class="dialog-actions" id="dialogActions"></div>
+      </div>
+    </div>
+    <div id="viewer" class="viewer" role="dialog" aria-modal="true" aria-labelledby="viewerTitle">
+      <div class="viewer-frame">
+        <div class="viewer-head">
+          <h2 id="viewerTitle"></h2>
+          <button class="menu-close" id="viewerClose">EXIT</button>
+        </div>
+        <div class="viewer-main">
+          <div class="viewer-stage">
+            <svg
+              class="schematic"
+              data-view="profile"
+              viewBox="0 0 800 400"
+              role="img"
+              aria-label="Side schematic of a Galaxy class starship"
+            >
+              <path class="axis" d="M20 180H790M216 20V380M520 20V380" />
+              <path
+                class="hull"
+                pathLength="1"
+                d="M262 148C300 165 318 190 322 214L430 216C425 185 400 160 372 138"
+              />
+              <path
+                class="hull"
+                pathLength="1"
+                d="M40 128C90 108 150 98 190 96L196 86Q215 78 236 86L242 96C290 98 350 110 386 130C345 140 300 146 270 148L150 150C110 148 70 140 40 128Z"
+              />
+              <path
+                class="hull"
+                pathLength="1"
+                d="M300 222Q306 214 322 212L640 206C690 206 730 214 748 224L700 248C600 286 470 296 380 286C335 280 306 256 300 222Z"
+              />
+              <path class="hull" pathLength="1" d="M560 214L590 138H640L640 208" />
+              <path
+                class="hull"
+                pathLength="1"
+                d="M470 120Q480 104 510 104L740 100Q775 102 776 116V126Q760 136 730 136L510 138Q478 138 470 120Z"
+              />
+              <path
+                class="detail"
+                d="M40 128L386 130M92 118H330M104 138H320M336 236L690 230M350 258L640 254"
+              />
+              <path class="windows" d="M110 124H320M350 244L650 240M380 270L600 266" />
+              <path class="warp" d="M520 114L760 111M520 127L760 124" />
+              <ellipse class="pulse" cx="318" cy="240" rx="11" ry="24" />
+              <ellipse class="pulse bussard" cx="488" cy="121" rx="15" ry="12" />
+              <path class="callout" d="M216 80V46M640 100V60M318 266L250 330M520 292V330" />
+              <text x="216" y="36" text-anchor="middle">MAIN BRIDGE</text>
+              <text x="640" y="50" text-anchor="middle">WARP NACELLE</text>
+              <text x="250" y="354" text-anchor="middle">DEFLECTOR</text>
+              <text x="520" y="354" text-anchor="middle">ENGINEERING</text>
+            </svg>
+            <svg
+              class="schematic"
+              data-view="dorsal"
+              viewBox="0 0 600 760"
+              role="img"
+              aria-label="Top schematic of a Galaxy class starship"
+            >
+              <path class="axis" d="M300 6V754M30 165H570M30 560H570" />
+              <ellipse class="hull" pathLength="1" cx="300" cy="165" rx="215" ry="145" />
+              <path
+                class="hull"
+                pathLength="1"
+                d="M258 306C250 400 250 540 268 660Q300 690 332 660C350 540 350 400 342 306"
+              />
+              <path class="hull" pathLength="1" d="M254 470L168 540V590L256 530" />
+              <path class="hull" pathLength="1" d="M346 470L432 540V590L344 530" />
+              <path class="hull" pathLength="1" d="M132 350Q150 322 168 350V718Q150 744 132 718Z" />
+              <path class="hull" pathLength="1" d="M432 350Q450 322 468 350V718Q450 744 432 718Z" />
+              <ellipse class="detail" cx="300" cy="165" rx="168" ry="112" />
+              <ellipse class="windows" cx="300" cy="165" rx="196" ry="131" />
+              <ellipse class="detail" cx="300" cy="165" rx="92" ry="62" />
+              <path
+                class="detail"
+                d="M300 21V103M300 227V310M85 165H208M392 165H515M148 62L222 113M452 62L378 113M148 268L222 217M452 268L378 217M300 330V650"
+              />
+              <path class="windows" d="M278 340V640M322 340V640" />
+              <path class="warp" d="M150 362V712M450 362V712" />
+              <circle class="pulse" cx="300" cy="148" r="11" />
+              <path
+                class="callout"
+                d="M300 148H560V52M120 250L52 300M468 372L506 342M300 682V716"
+              />
+              <text x="590" y="42" text-anchor="end">BRIDGE</text>
+              <text x="10" y="326">SAUCER</text>
+              <text x="590" y="334" text-anchor="end">NACELLE</text>
+              <text x="300" y="744" text-anchor="middle">STARDRIVE</text>
+            </svg>
+            <canvas
+              id="earthCanvas"
+              data-view="earth"
+              role="img"
+              aria-label="Rotating wireframe globe of Earth. Drag to turn it."
+            ></canvas>
+            <span class="scan" aria-hidden="true"></span>
+          </div>
+          <dl class="readouts" id="readouts"></dl>
+        </div>
+        <div class="viewer-tabs">
+          <button class="pill" data-tab="profile">PROFILE</button>
+          <button class="pill" data-tab="dorsal">DORSAL</button>
+          <button class="pill" data-tab="earth">EARTH</button>
+        </div>
       </div>
     </div>
     <script>
@@ -1131,7 +1553,6 @@
           $("layoutBtn").textContent = state.layout === "tabletop" ? "⇅ TABLETOP" : "▤ CONSOLE";
           $("layoutBtn").classList.toggle("active", state.layout === "tabletop");
           $("layoutBtn").setAttribute("aria-pressed", String(state.layout === "tabletop"));
-          $("advancedBtn").textContent = state.advanced ? "ON" : "OFF";
           $("advancedBtn").classList.toggle("active", state.advanced);
           $("advancedBtn").setAttribute("aria-pressed", String(state.advanced));
           $("summary").textContent = state.count + "P · " + state.startingLife + " LIFE";
@@ -1264,6 +1685,7 @@
         });
         document.addEventListener("keydown", (e) => {
           if (e.key !== "Escape") return;
+          if (viewer.classList.contains("show")) return closeViewer();
           if (backdrop.classList.contains("show")) close();
           else if (menuBackdrop.classList.contains("show")) closeMenu();
         });
@@ -1325,6 +1747,300 @@
               }),
             );
         }
+        // Sound effects: short sine-tone chirps, one note every 55 ms.
+        const SFX_KEY = "lcars-sfx",
+          SFX = {
+            tap: [1320],
+            plus: [990, 1320],
+            minus: [990, 740],
+            open: [880, 1175, 1568],
+            close: [1568, 1175, 880],
+          };
+        let soundOn = true,
+          audio = null;
+        try {
+          soundOn = localStorage.getItem(SFX_KEY) !== "off";
+        } catch (e) {}
+        function playSfx(name) {
+          try {
+            audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+            if (audio.state === "suspended") audio.resume();
+            SFX[name].forEach((frequency, i) => {
+              const start = audio.currentTime + i * 0.055,
+                osc = audio.createOscillator(),
+                gain = audio.createGain();
+              osc.type = "sine";
+              osc.frequency.value = frequency;
+              gain.gain.setValueAtTime(0.0001, start);
+              gain.gain.exponentialRampToValueAtTime(0.09, start + 0.006);
+              gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.07);
+              osc.connect(gain).connect(audio.destination);
+              osc.start(start);
+              osc.stop(start + 0.08);
+            });
+          } catch (e) {}
+        }
+        function sfxFor(button) {
+          if (button.classList.contains("plus")) return "plus";
+          if (button.classList.contains("minus")) return "minus";
+          if (button.id === "menuBtn" || button.dataset.openView) return "open";
+          if (/^(menuClose|viewerClose)$/.test(button.id)) return "close";
+          return "tap";
+        }
+        function showSound() {
+          $("soundBtn").classList.toggle("active", soundOn);
+          $("soundBtn").setAttribute("aria-pressed", String(soundOn));
+        }
+        $("soundBtn").addEventListener("click", () => {
+          soundOn = !soundOn;
+          showSound();
+          try {
+            localStorage.setItem(SFX_KEY, soundOn ? "on" : "off");
+          } catch (e) {}
+        });
+        showSound();
+        document.addEventListener("click", (e) => {
+          const button = e.target.closest("button");
+          if (button && soundOn) playSfx(sfxFor(button));
+        });
+
+        // Library viewer: Enterprise-D schematics and the wireframe Earth.
+        const VIEWS = {
+          profile: {
+            title: "ENTERPRISE // PROFILE",
+            data: [
+              ["REGISTRY", "NCC-1701-D"],
+              ["CLASS", "GALAXY"],
+              ["LENGTH", "642.5 M"],
+              ["DECKS", "42"],
+            ],
+          },
+          dorsal: {
+            title: "ENTERPRISE // DORSAL",
+            data: [
+              ["REGISTRY", "NCC-1701-D"],
+              ["MAX WARP", "9.6"],
+              ["NACELLES", "2"],
+              ["SAUCER", "SEPARABLE"],
+            ],
+          },
+          earth: {
+            title: "SOL III // EARTH",
+            data: [
+              ["PLANET CLASS", "M"],
+              ["RADIUS", "6,371 KM"],
+              ["AXIAL TILT", "23.44°"],
+              ["ROTATION", "23H 56M"],
+            ],
+          },
+        };
+        const viewer = $("viewer");
+        function showView(name) {
+          const view = VIEWS[name];
+          $("viewerTitle").textContent = view.title;
+          $("readouts").innerHTML = view.data
+            .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
+            .join("");
+          viewer
+            .querySelectorAll("[data-view]")
+            .forEach((e) => e.classList.toggle("on", e.dataset.view === name));
+          viewer.querySelectorAll("[data-tab]").forEach((b) => {
+            b.classList.toggle("active", b.dataset.tab === name);
+            b.setAttribute("aria-pressed", String(b.dataset.tab === name));
+          });
+          viewer.querySelector(".viewer-stage").classList.toggle("earth", name === "earth");
+          name === "earth" ? earth.start() : earth.stop();
+        }
+        function openViewer(name) {
+          closeMenu(false);
+          viewer.classList.add("show");
+          showView(name);
+          $("viewerClose").focus();
+        }
+        function closeViewer() {
+          viewer.classList.remove("show");
+          earth.stop();
+          menuBtn.focus();
+        }
+        document
+          .querySelectorAll("[data-open-view]")
+          .forEach((b) => b.addEventListener("click", () => openViewer(b.dataset.openView)));
+        viewer
+          .querySelectorAll("[data-tab]")
+          .forEach((b) => b.addEventListener("click", () => showView(b.dataset.tab)));
+        $("viewerClose").addEventListener("click", closeViewer);
+
+        const earth = (() => {
+          // Natural Earth 1:110m land (public domain), simplified to whole degrees: "lon,lat ...;..."
+          const LAND =
+            "-68,-54 -65,-55 -68,-56 -72,-54 -75,-53 -68,-54;173,-41 174,-41 173,-44 168,-47 167,-45 173,-41;175,-36 179,-38 175,-41 173,-35 175,-36;-180,-17 179,-16 -180,-17;50,-14 47,-25 44,-25 43,-21 44,-16 49,-12 50,-14;144,-14 153,-26 153,-32 149,-38 146,-39 141,-38 138,-34 137,-35 138,-33 136,-35 131,-31 117,-35 115,-34 115,-29 113,-26 114,-22 121,-20 126,-14 130,-15 132,-11 136,-12 135,-15 140,-18 142,-11 144,-14;134,-1 135,-3 138,-2 145,-4 151,-10 145,-8 143,-9 138,-8 138,-5 133,-4 132,-3 134,-2 131,-1 134,-1;125,1 120,0 121,-1 123,-1 122,-2 123,-5 121,-5 121,-3 119,-5 120,1 125,1;106,-6 103,-4 95,5 97,5 104,0 106,-3 106,-6;118,2 119,1 115,-4 110,-3 109,0 110,2 117,7 119,5 118,2;141,37 140,35 136,33 131,34 131,31 129,33 139,38 140,41 142,40 141,37;-56,51 -53,49 -53,47 -54,48 -59,48 -56,51;-3,59 -3,56 2,53 1,51 -6,50 -3,51 -5,52 -3,54 -6,57 -3,59;-15,66 -14,65 -19,63 -23,64 -24,65 -22,65 -24,66 -15,66;-180,69 -170,66 -173,64 -179,66 -180,65 180,65 177,65 179,62 164,60 162,55 157,51 156,57 164,63 160,61 157,61 155,59 142,59 135,55 140,54 141,52 138,46 128,40 129,35 126,34 125,40 121,39 122,41 118,39 119,37 122,37 119,35 122,32 122,28 116,23 110,20 109,22 106,20 109,13 105,9 100,13 99,9 103,6 104,1 101,3 98,8 97,17 94,16 91,23 87,21 80,16 80,10 78,8 73,21 70,21 66,25 57,26 48,30 52,24 56,26 60,22 55,17 43,13 43,17 35,30 34,28 32,30 37,19 43,12 45,10 51,12 51,11 48,4 39,-5 40,-16 35,-20 35,-24 26,-34 18,-34 12,-18 13,-9 9,-1 10,3 7,4 3,6 -8,4 -17,12 -17,22 -10,30 -9,33 -6,36 10,37 11,37 10,34 19,30 22,33 34,31 36,37 28,37 26,39 34,42 42,42 37,45 39,47 35,46 36,45 34,44 31,47 28,43 29,41 23,40 24,38 22,36 20,42 13,46 13,44 18,40 17,40 16,38 9,44 3,43 -2,37 -9,37 -9,43 -1,44 -1,46 -5,49 8,54 9,57 11,58 10,55 11,54 20,54 22,57 24,57 23,59 29,60 21,61 22,63 25,65 24,66 18,63 17,61 19,60 16,56 13,55 10,59 6,59 5,62 19,70 28,71 40,68 40,66 33,67 37,64 37,65 44,66 43,69 46,68 46,67 54,69 60,68 61,70 69,68 67,71 70,73 73,72 72,71 74,68 71,66 72,66 75,68 73,71 75,73 76,71 81,72 81,74 104,78 114,76 109,74 127,74 131,71 140,71 140,73 161,69 179,69 -180,69;-180,72 179,71 -180,72;-91,69 -87,67 -86,70 -83,70 -81,68 -93,62 -95,59 -92,57 -82,55 -80,51 -79,53 -80,55 -77,57 -79,59 -78,62 -74,62 -70,61 -68,58 -65,60 -56,52 -60,50 -66,50 -71,47 -65,49 -64,46 -60,46 -65,44 -66,44 -64,45 -67,45 -71,43 -70,42 -76,39 -76,37 -76,39 -76,36 -81,31 -80,25 -84,30 -97,28 -98,22 -96,19 -92,19 -90,21 -87,22 -89,16 -83,15 -84,11 -81,9 -77,9 -72,12 -72,9 -70,12 -68,11 -62,11 -57,6 -51,4 -50,0 -40,-3 -36,-5 -35,-7 -39,-13 -41,-22 -48,-25 -54,-34 -58,-34 -57,-37 -65,-41 -63,-43 -67,-46 -66,-47 -69,-51 -68,-52 -71,-54 -75,-52 -74,-47 -76,-47 -73,-42 -74,-43 -70,-20 -76,-15 -81,-6 -80,-3 -81,-1 -77,4 -78,8 -81,7 -86,10 -87,13 -103,18 -114,32 -115,30 -109,23 -112,25 -117,33 -121,35 -124,40 -125,48 -123,47 -123,49 -127,51 -134,58 -147,61 -152,59 -151,61 -158,56 -165,54 -157,59 -162,59 -166,61 -161,65 -168,66 -162,66 -167,68 -157,71 -137,69 -128,70 -109,67 -106,69 -96,67 -94,69 -96,70 -95,72 -91,69;-114,73 -108,72 -108,73 -105,73 -101,70 -107,69 -116,69 -117,70 -112,70 -119,72 -114,73;-87,73 -72,72 -68,70 -67,69 -69,69 -62,67 -64,65 -68,66 -65,63 -69,64 -66,62 -79,65 -74,65 -73,68 -79,70 -89,70 -90,72 -87,73;-120,71 -126,72 -124,74 -125,74 -122,74 -116,73 -120,71;-108,76 -106,75 -116,75 -118,75 -115,76 -108,76;58,71 51,72 56,75 61,76 69,77 58,74 55,72 58,71;-95,77 -80,75 -92,75 -97,77 -95,77;18,80 22,79 17,77 13,78 10,80 18,80;100,79 91,80 96,81 100,79;-87,80 -91,78 -96,80 -92,81 -87,80;-68,83 -62,82 -77,79 -75,79 -80,77 -78,77 -89,76 -88,78 -85,78 -88,78 -85,79 -87,80 -82,80 -92,82 -68,83;-27,84 -21,83 -31,82 -12,81 -20,80 -18,80 -20,79 -18,77 -22,77 -19,74 -25,72 -22,71 -26,71 -26,70 -22,70 -40,65 -43,60 -46,61 -49,61 -54,66 -51,70 -55,70 -51,71 -56,72 -55,73 -57,75 -69,76 -71,77 -67,77 -73,78 -60,82 -27,84"
+              .split(";")
+              .map((ring) => ring.split(" ").map((p) => p.split(",").map(Number)));
+          const GRID = [];
+          for (let lat = -60; lat <= 60; lat += 30) {
+            GRID.push(Array.from({ length: 73 }, (_, i) => [i * 5 - 180, lat]));
+          }
+          for (let lon = -180; lon < 180; lon += 30) {
+            GRID.push(Array.from({ length: 37 }, (_, i) => [lon, i * 5 - 90]));
+          }
+          const canvas = $("earthCanvas"),
+            ctx = canvas.getContext("2d"),
+            rad = Math.PI / 180,
+            AXIS = 23.44 * rad,
+            // Degrees per millisecond; Reduce Motion gets a slow turn rather than a frozen globe.
+            spinSpeed = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.004 : 0.016;
+          let spin = -90,
+            lean = 18,
+            frame = 0,
+            last = 0,
+            drag = null;
+          const project = ([lon, lat]) => {
+            const lam = (lon + spin) * rad,
+              phi = lat * rad,
+              x = Math.cos(phi) * Math.sin(lam),
+              y = Math.sin(phi),
+              z = Math.cos(phi) * Math.cos(lam),
+              t = lean * rad,
+              y2 = y * Math.cos(t) - z * Math.sin(t),
+              z2 = y * Math.sin(t) + z * Math.cos(t);
+            return [
+              x * Math.cos(AXIS) + y2 * Math.sin(AXIS),
+              -x * Math.sin(AXIS) + y2 * Math.cos(AXIS),
+              z2,
+            ];
+          };
+          // Splits each line into the near and far sides of the globe.
+          function trace(lines, r, cx, cy) {
+            const near = new Path2D(),
+              far = new Path2D();
+            for (const line of lines) {
+              let prev = null;
+              for (const point of line) {
+                const p = project(point);
+                if (prev && Math.abs(point[0] - prev.lon) < 170) {
+                  const side = p[2] >= 0 && prev.p[2] >= 0 ? near : far;
+                  side.moveTo(cx + prev.p[0] * r, cy - prev.p[1] * r);
+                  side.lineTo(cx + p[0] * r, cy - p[1] * r);
+                }
+                prev = { p, lon: point[0] };
+              }
+            }
+            return { near, far };
+          }
+          function stroke(path, color, width) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.stroke(path);
+          }
+          function draw(seconds) {
+            const ratio = Math.min(devicePixelRatio || 1, 2),
+              w = canvas.clientWidth,
+              h = canvas.clientHeight;
+            if (!w || !h) return;
+            if (canvas.width !== Math.round(w * ratio) || canvas.height !== Math.round(h * ratio)) {
+              canvas.width = Math.round(w * ratio);
+              canvas.height = Math.round(h * ratio);
+            }
+            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            ctx.clearRect(0, 0, w, h);
+            const r = Math.min(w, h) * 0.4,
+              cx = w / 2,
+              cy = h / 2,
+              grid = trace(GRID, r, cx, cy),
+              land = trace(LAND, r, cx, cy);
+            const halo = ctx.createRadialGradient(cx, cy, r * 0.9, cx, cy, r * 1.2);
+            halo.addColorStop(0, "#98c7fa44");
+            halo.addColorStop(1, "#98c7fa00");
+            ctx.fillStyle = halo;
+            ctx.fillRect(0, 0, w, h);
+            // Orbit marker: far half first, then the globe, then the near half.
+            const orbitW = Math.min(r * 1.32, w / 2 - 8),
+              orbitH = orbitW * 0.26,
+              orbit = (from, to, color) => {
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, orbitW, orbitH, -AXIS, from, to);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+              };
+            orbit(Math.PI, Math.PI * 2, "#bca5f955");
+            stroke(grid.far, "#98c7fa1f", 1);
+            stroke(land.far, "#96dfc83d", 1);
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fillStyle = "#0b0d1bb3";
+            ctx.fill();
+            stroke(grid.near, "#98c7fa66", 1);
+            stroke(land.near, "#96dfc844", 4);
+            stroke(land.near, "#96dfc8", 1.5);
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = "#98c7facc";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            orbit(0, Math.PI, "#bca5f9aa");
+            const a = seconds * 0.5,
+              ox = Math.cos(a) * orbitW,
+              oy = Math.sin(a) * orbitH;
+            if (Math.sin(a) > 0 || Math.hypot(ox, oy) > r) {
+              ctx.beginPath();
+              ctx.arc(
+                cx + ox * Math.cos(AXIS) + oy * Math.sin(AXIS),
+                cy - ox * Math.sin(AXIS) + oy * Math.cos(AXIS),
+                3.5,
+                0,
+                Math.PI * 2,
+              );
+              ctx.fillStyle = "#fa976b";
+              ctx.fill();
+            }
+          }
+          function tick(now) {
+            const step = last ? Math.min(now - last, 100) : 0;
+            last = now;
+            if (!drag) spin += step * spinSpeed;
+            draw(now / 1000);
+            frame = requestAnimationFrame(tick);
+          }
+          canvas.addEventListener("pointerdown", (e) => {
+            drag = { x: e.clientX, y: e.clientY };
+            canvas.setPointerCapture(e.pointerId);
+          });
+          canvas.addEventListener("pointermove", (e) => {
+            if (!drag) return;
+            spin += (e.clientX - drag.x) * 0.4;
+            lean = Math.max(-70, Math.min(70, lean + (e.clientY - drag.y) * 0.4));
+            drag = { x: e.clientX, y: e.clientY };
+          });
+          const release = () => (drag = null);
+          canvas.addEventListener("pointerup", release);
+          canvas.addEventListener("pointercancel", release);
+          return {
+            start() {
+              if (frame) return;
+              last = 0;
+              frame = requestAnimationFrame(tick);
+            },
+            stop() {
+              cancelAnimationFrame(frame);
+              frame = 0;
+            },
+          };
+        })();
+
+        // Year plus day of the year, so 3 Nov 2026 reads 2026.307, then local 24-hour time.
+        function stardate(now) {
+          const y = now.getFullYear(),
+            day = (Date.UTC(y, now.getMonth(), now.getDate()) - Date.UTC(y, 0, 0)) / 864e5,
+            pad = (n, width) => String(n).padStart(width, "0");
+          return `STARDATE ${y}.${pad(day, 3)} · ${pad(now.getHours(), 2)}:${pad(now.getMinutes(), 2)}`;
+        }
+        function tickClock() {
+          const text = stardate(new Date());
+          if ($("clock").textContent !== text) $("clock").textContent = text;
+        }
+        tickClock();
+        setInterval(tickClock, 1000);
         render();
         if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
           window.addEventListener("load", () =>

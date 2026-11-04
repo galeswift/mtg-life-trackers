@@ -1,12 +1,13 @@
 // Network-first so a redeploy reaches online users immediately; the cache is the offline fallback.
-const CACHE = 'lcars-life-v1';
+const CACHE = 'lcars-life-v2';
 const SHELL = [
   './',
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/icon-maskable-512.png',
-  'icons/apple-touch-icon.png'
+  'icons/apple-touch-icon.png',
+  'blueprint.webp'
 ];
 
 self.addEventListener('install', event => {

@@ -496,23 +496,31 @@
         align-items: center;
       }
       .rail {
-        height: 25px;
+        height: 44px;
         display: flex;
-        gap: 5px;
+        gap: 4px;
       }
-      .rail span:nth-child(1) {
-        width: 24%;
-        background: var(--lav);
-        border-radius: 0 0 0 15px;
-      }
-      .rail span:nth-child(2) {
-        width: 12%;
+      .rail-btn {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        border: 0;
+        padding: 0 12px 7px 18px;
         background: var(--peach);
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.1em;
       }
-      .rail span:nth-child(3) {
+      .rail-btn:first-child {
+        background: var(--lav);
+        border-radius: 0 0 0 22px;
+      }
+      .rail > span {
         flex: 1;
+        min-width: 14px;
         background: var(--pink);
-        border-radius: 0 0 15px 0;
+        border-radius: 0 0 22px 0;
       }
       .footnote {
         color: var(--muted);
@@ -821,13 +829,17 @@
         }
         .bottom {
           flex: none;
-          gap: 6px;
+          grid-template-columns: minmax(0, 1fr);
         }
         .rail {
-          height: 10px;
+          height: 42px;
+        }
+        .rail-btn {
+          font-size: 11px;
+          padding: 0 11px 7px 16px;
         }
         .footnote {
-          font-size: 8px;
+          display: none;
         }
         .menu-backdrop {
           align-items: flex-end;
@@ -934,7 +946,12 @@
           height: 4px;
         }
         .rail {
-          height: 12px;
+          height: 30px;
+        }
+        .rail-btn {
+          align-items: center;
+          padding: 0 10px 0 14px;
+          font-size: 10px;
         }
         .bottom {
           gap: 3px;
@@ -1006,7 +1023,7 @@
           linear-gradient(90deg, #26283c55 1px, transparent 1px) 0 0/32px 100%,
           #0b0d1b;
       }
-      .schematic,
+      .blueprint,
       #earthCanvas {
         position: absolute;
         inset: 0;
@@ -1014,68 +1031,22 @@
         width: 100%;
         height: 100%;
       }
-      .schematic.on,
+      .blueprint.on,
       #earthCanvas.on {
         display: block;
       }
-      .schematic {
-        padding: 10px;
+      .blueprint {
+        object-fit: contain;
+        transform-origin: 0 0;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        cursor: zoom-in;
       }
       #earthCanvas {
         touch-action: none;
         cursor: grab;
-      }
-      .schematic path,
-      .schematic ellipse,
-      .schematic circle {
-        fill: none;
-        vector-effect: non-scaling-stroke;
-      }
-      .schematic .axis {
-        stroke: #3a3d5a;
-        stroke-width: 1;
-        stroke-dasharray: 2 7;
-      }
-      .schematic .hull {
-        stroke: var(--blue);
-        stroke-width: 1.8;
-        fill: #98c7fa12;
-        stroke-dasharray: 1;
-        animation: draw 1.6s ease-out both;
-      }
-      .schematic .detail {
-        stroke: #bca5f999;
-        stroke-width: 1;
-      }
-      .schematic .windows {
-        stroke: #96dfc8bb;
-        stroke-width: 1.4;
-        stroke-dasharray: 2 6;
-      }
-      .schematic .warp {
-        stroke: #7fd2ff;
-        stroke-width: 3;
-        animation: warp 2.4s ease-in-out infinite;
-      }
-      .schematic .pulse {
-        fill: #fa976b55;
-        stroke: var(--orange);
-        stroke-width: 1.6;
-        animation: pulse 2.4s ease-in-out infinite;
-      }
-      .schematic .bussard {
-        fill: #e994bd66;
-        stroke: var(--pink);
-      }
-      .schematic .callout {
-        stroke: var(--peach);
-        stroke-width: 1;
-      }
-      .schematic text {
-        fill: var(--peach);
-        font-size: 20px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
       }
       .scan {
         position: absolute;
@@ -1144,24 +1115,6 @@
         background: var(--lav);
         color: var(--ink);
       }
-      @keyframes draw {
-        from {
-          stroke-dashoffset: 1;
-        }
-        to {
-          stroke-dashoffset: 0;
-        }
-      }
-      @keyframes pulse {
-        50% {
-          opacity: 0.45;
-        }
-      }
-      @keyframes warp {
-        50% {
-          opacity: 0.5;
-        }
-      }
       @keyframes scan {
         from {
           transform: translateX(-80px);
@@ -1197,12 +1150,6 @@
         .readouts dd {
           font-size: 12px;
         }
-        .schematic {
-          padding: 4px;
-        }
-        .schematic text {
-          font-size: 22px;
-        }
       }
       @media (orientation: landscape) and (max-height: 510px) {
         .viewer-head {
@@ -1228,14 +1175,8 @@
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .scan,
-        .schematic .warp,
-        .schematic .pulse {
+        .scan {
           animation: none;
-        }
-        .schematic .hull {
-          animation: none;
-          stroke-dasharray: none;
         }
       }
     </style>
@@ -1282,8 +1223,8 @@
       <main class="board" id="board" aria-label="Players and life totals"></main>
       <div class="bottom">
         <div class="rail">
-          <span></span>
-          <span></span>
+          <button class="rail-btn" data-open-view="blueprint">SCHEMATIC</button>
+          <button class="rail-btn" data-open-view="earth">EARTH</button>
           <span></span>
         </div>
         <div class="footnote">OFFLINE READY · LCARS 24.12</div>
@@ -1336,13 +1277,6 @@
               </button>
             </div>
           </div>
-          <div class="menu-row">
-            <span class="menu-label">Library</span>
-            <div class="menu-opts">
-              <button class="pill" data-open-view="profile">SCHEMATIC</button>
-              <button class="pill" data-open-view="earth">EARTH</button>
-            </div>
-          </div>
           <button class="pill warn" id="resetBtn">NEW GAME</button>
         </div>
         <div class="menu-foot"></div>
@@ -1363,86 +1297,15 @@
         </div>
         <div class="viewer-main">
           <div class="viewer-stage">
-            <svg
-              class="schematic"
-              data-view="profile"
-              viewBox="0 0 800 400"
-              role="img"
-              aria-label="Side schematic of a Galaxy class starship"
-            >
-              <path class="axis" d="M20 180H790M216 20V380M520 20V380" />
-              <path
-                class="hull"
-                pathLength="1"
-                d="M262 148C300 165 318 190 322 214L430 216C425 185 400 160 372 138"
-              />
-              <path
-                class="hull"
-                pathLength="1"
-                d="M40 128C90 108 150 98 190 96L196 86Q215 78 236 86L242 96C290 98 350 110 386 130C345 140 300 146 270 148L150 150C110 148 70 140 40 128Z"
-              />
-              <path
-                class="hull"
-                pathLength="1"
-                d="M300 222Q306 214 322 212L640 206C690 206 730 214 748 224L700 248C600 286 470 296 380 286C335 280 306 256 300 222Z"
-              />
-              <path class="hull" pathLength="1" d="M560 214L590 138H640L640 208" />
-              <path
-                class="hull"
-                pathLength="1"
-                d="M470 120Q480 104 510 104L740 100Q775 102 776 116V126Q760 136 730 136L510 138Q478 138 470 120Z"
-              />
-              <path
-                class="detail"
-                d="M40 128L386 130M92 118H330M104 138H320M336 236L690 230M350 258L640 254"
-              />
-              <path class="windows" d="M110 124H320M350 244L650 240M380 270L600 266" />
-              <path class="warp" d="M520 114L760 111M520 127L760 124" />
-              <ellipse class="pulse" cx="318" cy="240" rx="11" ry="24" />
-              <ellipse class="pulse bussard" cx="488" cy="121" rx="15" ry="12" />
-              <path class="callout" d="M216 80V46M640 100V60M318 266L250 330M520 292V330" />
-              <text x="216" y="36" text-anchor="middle">MAIN BRIDGE</text>
-              <text x="640" y="50" text-anchor="middle">WARP NACELLE</text>
-              <text x="250" y="354" text-anchor="middle">DEFLECTOR</text>
-              <text x="520" y="354" text-anchor="middle">ENGINEERING</text>
-            </svg>
-            <svg
-              class="schematic"
-              data-view="dorsal"
-              viewBox="0 0 600 760"
-              role="img"
-              aria-label="Top schematic of a Galaxy class starship"
-            >
-              <path class="axis" d="M300 6V754M30 165H570M30 560H570" />
-              <ellipse class="hull" pathLength="1" cx="300" cy="165" rx="215" ry="145" />
-              <path
-                class="hull"
-                pathLength="1"
-                d="M258 306C250 400 250 540 268 660Q300 690 332 660C350 540 350 400 342 306"
-              />
-              <path class="hull" pathLength="1" d="M254 470L168 540V590L256 530" />
-              <path class="hull" pathLength="1" d="M346 470L432 540V590L344 530" />
-              <path class="hull" pathLength="1" d="M132 350Q150 322 168 350V718Q150 744 132 718Z" />
-              <path class="hull" pathLength="1" d="M432 350Q450 322 468 350V718Q450 744 432 718Z" />
-              <ellipse class="detail" cx="300" cy="165" rx="168" ry="112" />
-              <ellipse class="windows" cx="300" cy="165" rx="196" ry="131" />
-              <ellipse class="detail" cx="300" cy="165" rx="92" ry="62" />
-              <path
-                class="detail"
-                d="M300 21V103M300 227V310M85 165H208M392 165H515M148 62L222 113M452 62L378 113M148 268L222 217M452 268L378 217M300 330V650"
-              />
-              <path class="windows" d="M278 340V640M322 340V640" />
-              <path class="warp" d="M150 362V712M450 362V712" />
-              <circle class="pulse" cx="300" cy="148" r="11" />
-              <path
-                class="callout"
-                d="M300 148H560V52M120 250L52 300M468 372L506 342M300 682V716"
-              />
-              <text x="590" y="42" text-anchor="end">BRIDGE</text>
-              <text x="10" y="326">SAUCER</text>
-              <text x="590" y="334" text-anchor="end">NACELLE</text>
-              <text x="300" y="744" text-anchor="middle">STARDRIVE</text>
-            </svg>
+            <img
+              class="blueprint"
+              id="blueprintImg"
+              data-view="blueprint"
+              src="blueprint.webp"
+              alt="Starship blueprint with labeled top, bottom, and side views. Pinch or double-tap to zoom."
+              loading="lazy"
+              draggable="false"
+            />
             <canvas
               id="earthCanvas"
               data-view="earth"
@@ -1454,8 +1317,7 @@
           <dl class="readouts" id="readouts"></dl>
         </div>
         <div class="viewer-tabs">
-          <button class="pill" data-tab="profile">PROFILE</button>
-          <button class="pill" data-tab="dorsal">DORSAL</button>
+          <button class="pill" data-tab="blueprint">BLUEPRINT</button>
           <button class="pill" data-tab="earth">EARTH</button>
         </div>
       </div>
@@ -1804,24 +1666,15 @@
           if (button && soundOn) playSfx(sfxFor(button));
         });
 
-        // Library viewer: Enterprise-D schematics and the wireframe Earth.
+        // Library viewer: the Enterprise-D blueprint and the wireframe Earth.
         const VIEWS = {
-          profile: {
-            title: "ENTERPRISE // PROFILE",
+          blueprint: {
+            title: "ENTERPRISE // BLUEPRINT",
             data: [
               ["REGISTRY", "NCC-1701-D"],
               ["CLASS", "GALAXY"],
               ["LENGTH", "642.5 M"],
-              ["DECKS", "42"],
-            ],
-          },
-          dorsal: {
-            title: "ENTERPRISE // DORSAL",
-            data: [
-              ["REGISTRY", "NCC-1701-D"],
-              ["MAX WARP", "9.6"],
-              ["NACELLES", "2"],
-              ["SAUCER", "SEPARABLE"],
+              ["ZOOM", "DOUBLE-TAP"],
             ],
           },
           earth: {
@@ -1850,9 +1703,11 @@
           });
           viewer.querySelector(".viewer-stage").classList.toggle("earth", name === "earth");
           name === "earth" ? earth.start() : earth.stop();
+          blueprint.reset();
         }
-        function openViewer(name) {
-          closeMenu(false);
+        let viewerOpener = null;
+        function openViewer(name, opener) {
+          viewerOpener = opener;
           viewer.classList.add("show");
           showView(name);
           $("viewerClose").focus();
@@ -1860,11 +1715,11 @@
         function closeViewer() {
           viewer.classList.remove("show");
           earth.stop();
-          menuBtn.focus();
+          viewerOpener.focus();
         }
         document
           .querySelectorAll("[data-open-view]")
-          .forEach((b) => b.addEventListener("click", () => openViewer(b.dataset.openView)));
+          .forEach((b) => b.addEventListener("click", () => openViewer(b.dataset.openView, b)));
         viewer
           .querySelectorAll("[data-tab]")
           .forEach((b) => b.addEventListener("click", () => showView(b.dataset.tab)));
@@ -2024,6 +1879,103 @@
             stop() {
               cancelAnimationFrame(frame);
               frame = 0;
+            },
+          };
+        })();
+
+        // Blueprint zoom: pinch, drag, double-tap, or scroll wheel.
+        const blueprint = (() => {
+          const img = $("blueprintImg"),
+            MAX_ZOOM = 6,
+            DOUBLE_TAP_ZOOM = 3,
+            pointers = new Map();
+          let scale = 1,
+            x = 0,
+            y = 0,
+            lastTap = 0,
+            pinch = null;
+          function apply() {
+            x = Math.min(0, Math.max(img.clientWidth * (1 - scale), x));
+            y = Math.min(0, Math.max(img.clientHeight * (1 - scale), y));
+            img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+            img.style.cursor = scale > 1 ? "grab" : "zoom-in";
+          }
+          function zoomAt(cx, cy, wanted) {
+            const next = Math.max(1, Math.min(MAX_ZOOM, wanted));
+            x = cx - ((cx - x) * next) / scale;
+            y = cy - ((cy - y) * next) / scale;
+            scale = next;
+            apply();
+          }
+          const local = (e) => {
+            const box = img.parentElement.getBoundingClientRect();
+            return [e.clientX - box.left, e.clientY - box.top];
+          };
+          const spread = () => {
+            const [a, b] = [...pointers.values()];
+            return {
+              size: Math.hypot(a[0] - b[0], a[1] - b[1]),
+              x: (a[0] + b[0]) / 2,
+              y: (a[1] + b[1]) / 2,
+            };
+          };
+          img.addEventListener("pointerdown", (e) => {
+            img.setPointerCapture(e.pointerId);
+            const at = local(e);
+            pointers.set(e.pointerId, at);
+            if (pointers.size === 2) {
+              pinch = spread();
+              lastTap = 0;
+            } else if (pointers.size === 1) {
+              const now = performance.now();
+              if (now - lastTap < 300) {
+                zoomAt(at[0], at[1], scale > 1 ? 1 : DOUBLE_TAP_ZOOM);
+                lastTap = 0;
+              } else {
+                lastTap = now;
+              }
+            }
+          });
+          img.addEventListener("pointermove", (e) => {
+            const from = pointers.get(e.pointerId);
+            if (!from) return;
+            const at = local(e);
+            pointers.set(e.pointerId, at);
+            if (pointers.size === 1) {
+              x += at[0] - from[0];
+              y += at[1] - from[1];
+              apply();
+            } else if (pinch && pointers.size === 2) {
+              const now = spread();
+              x += now.x - pinch.x;
+              y += now.y - pinch.y;
+              zoomAt(now.x, now.y, (scale * now.size) / pinch.size);
+              pinch = now;
+            }
+          });
+          const release = (e) => {
+            pointers.delete(e.pointerId);
+            pinch = null;
+          };
+          img.addEventListener("pointerup", release);
+          img.addEventListener("pointercancel", release);
+          img.addEventListener(
+            "wheel",
+            (e) => {
+              e.preventDefault();
+              const at = local(e);
+              zoomAt(at[0], at[1], scale * Math.exp(-e.deltaY * 0.002));
+            },
+            { passive: false },
+          );
+          return {
+            reset() {
+              scale = 1;
+              x = 0;
+              y = 0;
+              pointers.clear();
+              pinch = null;
+              apply();
             },
           };
         })();

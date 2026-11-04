@@ -265,9 +265,12 @@
         background: #0d0f1e;
         border-radius: 16px 0 0 16px;
       }
+      .player > .life-zone:last-child {
+        padding-bottom: 8px !important;
+      }
       .menu-row {
         display: grid;
-        grid-template-columns: 62px minmax(0, 1fr);
+        grid-template-columns: 74px minmax(0, 1fr);
         gap: 8px;
         align-items: center;
       }
@@ -1010,6 +1013,19 @@
               </button>
             </div>
           </div>
+          <div class="menu-row">
+            <span class="menu-label">Advanced</span>
+            <div class="menu-opts">
+              <button
+                class="pill"
+                id="advancedBtn"
+                aria-label="Show poison counters and five or ten life adjustments"
+                aria-pressed="false"
+              >
+                OFF
+              </button>
+            </div>
+          </div>
           <button class="pill warn" id="resetBtn">NEW GAME</button>
         </div>
         <div class="menu-foot"></div>
@@ -1037,6 +1053,7 @@
           count: 2,
           startingLife: 20,
           layout: "tabletop",
+          advanced: false,
           players: makePlayers(),
         });
         let state = defaultState(),
@@ -1052,6 +1069,7 @@
           ) {
             state = saved;
             state.layout = state.layout === "console" ? "console" : "tabletop";
+            state.advanced = state.advanced === true;
             state.players = state.players.map((p, i) => ({
               name: String(p.name || "PLAYER " + (i + 1)).slice(0, 22),
               life: Number.isFinite(p.life) ? p.life : state.startingLife,
@@ -1094,7 +1112,15 @@
             .map((p, i) => {
               const lethal = state.startingLife === 40 && p.commander.some((v) => v >= 21),
                 dead = p.life <= 0 || p.poison >= 10 || lethal;
-              return `<section class="player" data-player="${i}"><div class="player-header"><input class="player-name" aria-label="Player ${i + 1} name" maxlength="22" value="${esc(p.name)}" data-name="${i}" spellcheck="false"><span class="player-code">UNIT 0${i + 1} ${dead ? "· CRITICAL" : "· ACTIVE"}</span></div><div class="life-zone"><button class="life-control minus" data-life="${i}" data-delta="-1" aria-label="Subtract one life from ${esc(p.name)}">−</button><div class="life-center"><span class="life-label">LIFE</span><span class="life-number len${String(p.life).length} ${dead ? "dead" : p.life <= 5 ? "danger" : ""}" aria-live="polite">${p.life}</span></div><button class="life-control plus" data-life="${i}" data-delta="1" aria-label="Add one life to ${esc(p.name)}">+</button></div><div class="player-footer"><button class="micro" data-adjust="${i}">± 5 / 10</button><button class="micro ${p.poison ? "poisoned" : ""}" data-poison="${i}" aria-label="Poison counters for ${esc(p.name)}: ${p.poison}">☣ ${p.poison}<span class="word"> POISON</span></button>${state.startingLife === 40 ? `<button class="micro damage" data-cmd="${i}" aria-label="Commander damage for ${esc(p.name)}">CMD<span class="word"> DMG</span></button>` : ""}</div></section>`;
+              const advancedTools = state.advanced
+                ? `<button class="micro" data-adjust="${i}">± 5 / 10</button><button class="micro ${p.poison ? "poisoned" : ""}" data-poison="${i}" aria-label="Poison counters for ${esc(p.name)}: ${p.poison}">☣ ${p.poison}<span class="word"> POISON</span></button>`
+                : "";
+              const commanderTool =
+                state.startingLife === 40
+                  ? `<button class="micro damage" data-cmd="${i}" aria-label="Commander damage for ${esc(p.name)}">CMD<span class="word"> DMG</span></button>`
+                  : "";
+              const tools = advancedTools + commanderTool;
+              return `<section class="player" data-player="${i}"><div class="player-header"><input class="player-name" aria-label="Player ${i + 1} name" maxlength="22" value="${esc(p.name)}" data-name="${i}" spellcheck="false"><span class="player-code">UNIT 0${i + 1} ${dead ? "· CRITICAL" : "· ACTIVE"}</span></div><div class="life-zone"><button class="life-control minus" data-life="${i}" data-delta="-1" aria-label="Subtract one life from ${esc(p.name)}">−</button><div class="life-center"><span class="life-label">LIFE</span><span class="life-number len${String(p.life).length} ${dead ? "dead" : p.life <= 5 ? "danger" : ""}" aria-live="polite">${p.life}</span></div><button class="life-control plus" data-life="${i}" data-delta="1" aria-label="Add one life to ${esc(p.name)}">+</button></div>${tools ? `<div class="player-footer">${tools}</div>` : ""}</section>`;
             })
             .join("");
           document
@@ -1105,6 +1131,9 @@
           $("layoutBtn").textContent = state.layout === "tabletop" ? "⇅ TABLETOP" : "▤ CONSOLE";
           $("layoutBtn").classList.toggle("active", state.layout === "tabletop");
           $("layoutBtn").setAttribute("aria-pressed", String(state.layout === "tabletop"));
+          $("advancedBtn").textContent = state.advanced ? "ON" : "OFF";
+          $("advancedBtn").classList.toggle("active", state.advanced);
+          $("advancedBtn").setAttribute("aria-pressed", String(state.advanced));
           $("summary").textContent = state.count + "P · " + state.startingLife + " LIFE";
           $("undoBtn").disabled = history.length === 0;
           $("undoBtn").style.opacity = history.length ? "1" : ".45";
@@ -1135,6 +1164,9 @@
           .forEach((b) =>
             b.addEventListener("click", () => update(() => (state.count = +b.dataset.mode))),
           );
+        $("advancedBtn").addEventListener("click", () =>
+          update(() => (state.advanced = !state.advanced)),
+        );
         $("layoutBtn").addEventListener("click", () =>
           update(() => (state.layout = state.layout === "tabletop" ? "console" : "tabletop")),
         );

@@ -1614,7 +1614,7 @@
         const SFX_KEY = "lcars-sfx",
           sfxFiles = {},
           sfxBuffers = {};
-        ["tap", "plus", "minus", "open", "close"].forEach((name) => {
+        ["key1", "key2", "key3", "hail", "undo", "confirm"].forEach((name) => {
           sfxFiles[name] = fetch(`sfx/${name}.mp3`)
             .then((response) => response.arrayBuffer())
             .catch(() => null);
@@ -1643,11 +1643,11 @@
           } catch (e) {}
         }
         function sfxFor(button) {
-          if (button.classList.contains("plus")) return "plus";
-          if (button.classList.contains("minus")) return "minus";
-          if (button.id === "menuBtn" || button.dataset.openView) return "open";
-          if (/^(menuClose|viewerClose)$/.test(button.id)) return "close";
-          return "tap";
+          if (button.id === "menuBtn") return "hail";
+          if (button.id === "undoBtn") return "undo";
+          if (button.id === "resetBtn" || button.matches("#dialogActions .active"))
+            return "confirm";
+          return "key" + (1 + Math.floor(Math.random() * 3));
         }
         function showSound() {
           $("soundBtn").classList.toggle("active", soundOn);

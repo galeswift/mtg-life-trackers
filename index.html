@@ -1772,7 +1772,7 @@
           if (button.id === "undoBtn") return "undo";
           if (button.id === "resetBtn" || button.matches("#dialogActions .active"))
             return "confirm";
-          return "key" + (1 + Math.floor(Math.random() * 3));
+          return "key" + 2;
         }
         function showSound() {
           $("soundBtn").classList.toggle("active", soundOn);

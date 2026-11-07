@@ -2136,6 +2136,26 @@
         tickClock();
         setInterval(tickClock, 1000);
         render();
+
+        // Keep the screen awake while the tracker is visible. The browser drops the
+        // lock whenever the page is hidden, so re-request it on return and on taps
+        // (some browsers only grant it after a user gesture).
+        if ("wakeLock" in navigator) {
+          let wakeLock = null;
+          const requestWakeLock = async () => {
+            if (wakeLock || document.visibilityState !== "visible") return;
+            try {
+              wakeLock = await navigator.wakeLock.request("screen");
+              wakeLock.addEventListener("release", () => (wakeLock = null));
+            } catch {
+              wakeLock = null;
+            }
+          };
+          requestWakeLock();
+          document.addEventListener("visibilitychange", requestWakeLock);
+          document.addEventListener("pointerdown", requestWakeLock, { passive: true });
+        }
+
         if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
           window.addEventListener("load", () =>
             navigator.serviceWorker.register("./sw.js").catch(() => {}),

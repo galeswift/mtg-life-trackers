@@ -51,6 +51,11 @@
       button {
         touch-action: none;
         cursor: pointer;
+        /* A held or dragged finger must not start text selection or the iOS callout,
+           either of which cancels the press. */
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
       }
       .menu button {
         touch-action: manipulation;
@@ -1810,12 +1815,11 @@
           );
         }
         // Touch presses are judged here, not by the browser's own tap detection: the browser
-        // drops a tap whose finger drifts a few pixels or ends just past the button's edge,
-        // which happens easily near the bottom of the tall life buttons. A press counts if
-        // the finger lifts on the button or within PRESS_SLOP of it. Each finger is tracked
-        // separately so players can tap at the same time.
-        const PRESS_SLOP = 24,
-          presses = new Map();
+        // drops a tap whose finger moves more than a few pixels or lifts off the button, which
+        // happens easily on the tall life buttons. Any touch that starts on a button counts
+        // when the finger lifts, wherever it lifts. Only a scroll (pointercancel, e.g. in the
+        // menu) cancels it. Each finger is tracked separately so players can tap at the same time.
+        const presses = new Map();
         let touchPress = false;
         document.addEventListener("pointerdown", (e) => {
           const button = e.target.closest("button");
@@ -1827,16 +1831,7 @@
           const button = presses.get(e.pointerId);
           if (!button) return;
           presses.delete(e.pointerId);
-          const r = button.getBoundingClientRect();
-          if (
-            button.disabled ||
-            !button.isConnected ||
-            e.clientX < r.left - PRESS_SLOP ||
-            e.clientX > r.right + PRESS_SLOP ||
-            e.clientY < r.top - PRESS_SLOP ||
-            e.clientY > r.bottom + PRESS_SLOP
-          )
-            return;
+          if (button.disabled || !button.isConnected) return;
           // The cancelled touchend below also skips the usual blur, so commit a name being edited.
           if (document.activeElement !== button) document.activeElement?.blur?.();
           touchPress = true;

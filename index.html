@@ -46,9 +46,19 @@
       select {
         font: inherit;
       }
+      /* Buttons never hand a touch to the browser as a pan, so a finger that drifts
+         while lifting can't cancel the press. The menu scrolls, so its buttons still allow it. */
       button {
-        touch-action: manipulation;
+        touch-action: none;
         cursor: pointer;
+        /* A held or dragged finger must not start text selection or the iOS callout,
+           either of which cancels the press. */
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      .menu button {
+        touch-action: manipulation;
       }
       button:focus-visible,
       input:focus-visible {
@@ -1789,7 +1799,8 @@
         document.addEventListener("click", (e) => {
           const button = e.target.closest("button");
           if (button && soundOn) playSfx(sfxFor(button));
-          if (button && e.detail === 0) lightUp(button); // keyboard presses have no pointerdown
+          // Keyboard presses have no pointerdown; touch presses already lit up on theirs.
+          if (button && e.detail === 0 && !touchPress) lightUp(button);
         });
 
         // Every button flashes from the press itself, then fades back to its own colours.
@@ -1803,10 +1814,42 @@
             { duration: 320, easing: "ease-out" },
           );
         }
+        // Touch presses are judged here, not by the browser's own tap detection: the browser
+        // drops a tap whose finger moves more than a few pixels or lifts off the button, which
+        // happens easily on the tall life buttons. Any touch that starts on a button counts
+        // when the finger lifts, wherever it lifts. Only a scroll (pointercancel, e.g. in the
+        // menu) cancels it. Each finger is tracked separately so players can tap at the same time.
+        const presses = new Map();
+        let touchPress = false;
         document.addEventListener("pointerdown", (e) => {
           const button = e.target.closest("button");
-          if (button && !button.disabled) lightUp(button);
+          if (!button || button.disabled) return;
+          lightUp(button);
+          if (e.pointerType === "touch") presses.set(e.pointerId, button);
         });
+        document.addEventListener("pointerup", (e) => {
+          const button = presses.get(e.pointerId);
+          if (!button) return;
+          presses.delete(e.pointerId);
+          if (button.disabled || !button.isConnected) return;
+          // The cancelled touchend below also skips the usual blur, so commit a name being edited.
+          if (document.activeElement !== button) document.activeElement?.blur?.();
+          touchPress = true;
+          try {
+            button.click();
+          } finally {
+            touchPress = false;
+          }
+        });
+        document.addEventListener("pointercancel", (e) => presses.delete(e.pointerId));
+        // Stop the browser's own click for touches on buttons, since pointerup above handles them.
+        document.addEventListener(
+          "touchend",
+          (e) => {
+            if (e.target instanceof Element && e.target.closest("button")) e.preventDefault();
+          },
+          { passive: false },
+        );
 
         // Library viewer: the Enterprise-D blueprint and the wireframe Earth.
         const VIEWS = {
